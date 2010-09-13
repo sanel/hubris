@@ -1,0 +1,53 @@
+#!/bin/sh
+
+VERSION="0.1.0"
+
+# content location
+hubris_dir="`dirname $0`"
+hubris_dir=`echo $hubris_dir | sed 's/\/bin//'`
+program=`basename $0`
+
+# rlwrap stuff
+RLWRAP=`which rlwrap`
+breakchars="(){}[],^%$#@\"\";:''|\\"
+
+if test "x$RLWRAP" != "x"; then
+   COMMAND="$RLWRAP --remember -c -b $breakchars -f $hubris_dir/utils/completions"
+else
+   COMMAND=""
+fi
+
+CLASSES="$hubris_dir/lib"
+CLASSPATH="$CLASSPATH:`find $CLASSES -name "*.jar" | tr '\n' ':'`"
+
+export CLASSPATH
+
+help() {
+   echo "Usage: $program [OPTIONS]"
+   echo "hubris is a Hbase UBeR Interactive Shell"
+   echo "Options:"
+   echo "   --help       hhis help"
+   echo "   --version    show version"
+   echo "   --clojure    go directly in clojure mode"
+}
+
+if test $# -ne 0; then
+   case $1 in
+      "--help")
+      help
+      exit 0
+      ;;
+      "--version")
+      echo $VERSION
+      exit 0
+      ;;
+      "--clojure")
+      clojure_mode="true"
+      ;;
+      *)
+      echo "Unknown option. Run '$program --help' for all options."
+      exit 1
+   esac
+fi
+
+$COMMAND java -jar $hubris_dir/hubris-standalone.jar $clojure_mode
