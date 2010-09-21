@@ -3,9 +3,10 @@
 VERSION="0.1.0"
 
 # content location
+program=`basename $0`
 hubris_dir="`dirname $0`"
 hubris_dir=`echo $hubris_dir | sed 's/\/bin//'`
-program=`basename $0`
+hubris_jar="$hubris_dir/hubris-standalone.jar"
 
 # rlwrap stuff
 RLWRAP=`which rlwrap`
@@ -26,7 +27,7 @@ help() {
    echo "Usage: $program [OPTIONS]"
    echo "hubris is a Hbase UBeR Interactive Shell"
    echo "Options:"
-   echo "   --help       hhis help"
+   echo "   --help       this help"
    echo "   --version    show version"
    echo "   --clojure    go directly in clojure mode"
 }
@@ -50,4 +51,9 @@ if test $# -ne 0; then
    esac
 fi
 
-$COMMAND java -jar $hubris_dir/hubris-standalone.jar $clojure_mode
+if test ! -f $hubris_jar; then
+   echo "Unable to find application jar file. Did you compiled hubris???"
+   exit 1
+fi
+
+$COMMAND java -jar $hubris_jar $clojure_mode
