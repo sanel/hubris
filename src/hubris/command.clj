@@ -1,7 +1,11 @@
 ;; vim:ft=lisp:ts=3:sw=3:expandtab
 (ns hubris.command
-  (:gen-class))
+  "Functions for handling hubris actions (aka commands)."
+  (:gen-class)
+  (:use clojure.contrib.with-ns))
 
+;; here are store registered commands, but to resolve each of them make sure to 
+;; use 'hubris.command' namespace, as there symbols are stored by default
 (def *known-commands* (ref []))
 
 (defn command-exists? 
@@ -35,19 +39,24 @@
   []
   @*known-commands*)
 
-(defmacro command-doc
+(defn command-doc
   "Return associated documentation for command or nil if not exists."
   [cmd]
-  `(:doc (meta (var ~cmd))))
+  ;; only 'println' is in clojure namespace
+  (if (= cmd 'println)
+    (:doc (meta (intern 'clojure.core cmd)))
+    (:doc (meta (intern 'hubris.builtin cmd)))
+) )
 
 (defmacro defcommand
   "Creates hubris command."
   [name args & body]
   `(do
      (register-command '~name)
-     (defn ~name ~args
-       ~@body)
-))
+     (with-ns 'hubris.builtin
+       (defn ~name ~args
+         ~@body))
+)  )
 
 (defmacro make-builtin 
   "Creates builtin command. For now, nothing too smart, but 
