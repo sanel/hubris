@@ -6,7 +6,7 @@ VERSION="0.1.0"
 program=`basename $0`
 hubris_dir="`dirname $0`"
 hubris_dir=`echo $hubris_dir | sed 's/\/bin//'`
-hubris_jar="$hubris_dir/hubris-standalone.jar"
+hubris_jar="$hubris_dir/hubris-$VERSION-standalone.jar"
 
 # rlwrap stuff
 RLWRAP=`which rlwrap`
