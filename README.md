@@ -13,12 +13,25 @@ Key features:
 
 ## Usage
 
-After archive unpacking, executing
+To start hubris shell, simply run
 
     > <hubris-install-dir>/bin/hubris
 
-would start the shell. Simply add _--help_ to see more options, or type _help_ in shell
-to see available commands.
+Running _help_ inside shell would give you avaliable commands you can use, like:
+    Hbase UBer Interactive Shell; enter \'help<RETURN>\' to see available commands or \'exit<RETURN>\' to quit.
+    hubris> help<ENTER>
+
+    help                 Show help.
+
+    exit                 Exit from shell.
+
+    println              Same as print followed by (newline)
+
+    clojure-mode-on      Go into clojure mode. In this mode you have full access to clojure shell and language.
+
+    ...
+
+
 
 ## Installation
 
