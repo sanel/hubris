@@ -30,6 +30,7 @@ help() {
    echo "   --help       this help"
    echo "   --version    show version"
    echo "   --clojure    go directly in clojure mode"
+   echo "   --debug      display various details from hbase logger and hubris"
 }
 
 if test $# -ne 0; then
@@ -44,6 +45,9 @@ if test $# -ne 0; then
       ;;
       "--clojure")
       clojure_mode="true"
+      ;;
+      "--debug")
+      export HUBRIS_DEBUG=1
       ;;
       *)
       echo "Unknown option. Run '$program --help' for all options."

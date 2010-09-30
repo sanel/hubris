@@ -30,14 +30,35 @@
     (doto @*hbase-conf*
       (.set "hbase.master" host)
       (.set "hbase.zookeeper.quorum" zookeeper)
+
+      ;; some default values from 'hbase shell'
+      (.setInt "hbase.client.retries.number" 7)
+      (.setInt "ipc.client.connect.max.retries" 3)
   ) )
+
+  ;; setup logging verbosity
+  (if (= "1" (System/getenv "HUBRIS_DEBUG"))
+    (do
+      (.setLevel (org.apache.log4j.Logger/getLogger "org.apache.zookeeper")
+                 org.apache.log4j.Level/DEBUG)
+      (.setLevel (org.apache.log4j.Logger/getLogger "org.apache.hadoop.hbase")
+                 org.apache.log4j.Level/DEBUG))
+    (do
+      (.setLevel (org.apache.log4j.Logger/getLogger "org.apache.zookeeper")
+                 org.apache.log4j.Level/ERROR)
+      (.setLevel (org.apache.log4j.Logger/getLogger "org.apache.hadoop.hbase")
+                 org.apache.log4j.Level/ERROR)))
 
   (try
     (dosync
       (ref-set *hbase-admin* (new HBaseAdmin @*hbase-conf*)) )
     (catch MasterNotRunningException e
       (printf "*** Master is not running (%s)\n" (.getMessage e))
-) ) )
+  ) )
+
+  ;; return status
+  (and @*hbase-conf* @*hbase-admin* true)
+)
 
 (defn disconnect
   "Clears connection refs."
