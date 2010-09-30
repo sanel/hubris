@@ -54,14 +54,40 @@ Examples:
   (defcommand list-tables
     "List all tables in hbase"
     []
-    (if (hbase.core/connected?)
-      (doseq [i (hbase.core/list-tables)]
-        (println i))
-      (println "Not connected to HBase")
+    (doseq [i (hbase.core/list-tables)]
+      (if (hbase.core/table-enabled? i)
+        (println i)
+        (printf "%s [disabled]\n" i)
+  ) ) )
+
+  (defcommand enable
+    "Enable the named table"
+    [table]
+    (if (hbase.core/table-enabled? table)
+      (println "Table already enabled")
+      (hbase.core/enable-table table)
+  ) )
+
+  (defcommand disable
+    "Disable the named table: e.g. 'hubris> disable \"t1\"'"
+    [table]
+    (if (hbase.core/table-enabled? table)
+      (hbase.core/disable-table table)
+      (println "Table already disabled")
   ) )
 
   (defcommand exists
     "Does the named table exist? e.g. 'hbase> exists \"t1\"'"
     [name]
     (hbase.core/table-exists? name))
+
+  (defcommand shutdown
+    "Shut down the cluster."
+    []
+    (hbase.core/shutdown-cluster))
+
+  (defcommand version
+    "Output this HBase version"
+    []
+    (printf "Version: %s\n" (hbase.core/hbase-version)))
 )

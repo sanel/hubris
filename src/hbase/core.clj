@@ -4,10 +4,21 @@
   wrappers for HBase are pretty much unusable for hubris needs."
   (:gen-class)
   (:import [org.apache.hadoop.hbase HBaseConfiguration MasterNotRunningException]
-           [org.apache.hadoop.hbase.client HBaseAdmin HTable Put Get Scan]))
+           [org.apache.hadoop.hbase.client HBaseAdmin HTable Put Get Scan]
+           [org.apache.hadoop.hbase.util VersionInfo]))
 
 (def *hbase-admin* (ref nil))
 (def *hbase-conf*  (ref nil))
+
+(defmacro with-connection
+  "Perform action if connected to HBase, or plop error message if not."
+  [& body]
+  `(if (and @*hbase-admin* @*hbase-conf*)
+     (do ~@body)
+     (do
+       (println "Not connected to database")
+       nil)
+) )
 
 (defn table-name
   "Return table name from descriptor."
@@ -18,7 +29,7 @@
 (defn list-tables
   "Return list of table names."
   []
-  (when @*hbase-admin*
+  (with-connection
     (map table-name (.listTables @*hbase-admin*))
 ) )
 
@@ -63,10 +74,11 @@
 (defn disconnect
   "Clears connection refs."
   []
-  (dosync
-    (ref-set *hbase-admin* nil)
-    (ref-set *hbase-conf*  nil)
-) )
+  (with-connection
+    (dosync
+      (ref-set *hbase-admin* nil)
+      (ref-set *hbase-conf*  nil)
+) ) )
 
 (defn connected?
   "Return true if connected."
@@ -79,7 +91,37 @@
 (defn table-exists?
   "Check if given table exists."
   [name]
-  (if (and @*hbase-conf* @*hbase-admin*)
+  (with-connection
     (.tableExists @*hbase-admin* name)
-    false)
-)
+) )
+
+(defn hbase-version
+  "Return HBase version, revision and build date as string"
+  []
+  (str (VersionInfo/getVersion) ","
+       "r" (VersionInfo/getRevision) ","
+       (VersionInfo/getDate)))
+
+(defn enable-table
+  "Enable given table. First check if is enabled before"
+  [table]
+  (with-connection
+    (.enableTable @*hbase-admin* table)))
+
+(defn disable-table
+  "Disable given table. First check if is disabled before"
+  [table]
+  (with-connection
+    (.disableTable @*hbase-admin* table)))
+
+(defn table-enabled?
+  "Check if given table is enabled or disabled"
+  [table]
+  (with-connection
+    (.isTableEnabled @*hbase-admin* table)))
+
+(defn shutdown-cluster
+  "Shutdown HBase cluster"
+  []
+  (with-connection
+    (.shutdown @*hbase-admin*)))

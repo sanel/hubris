@@ -4,19 +4,29 @@
   (:require clojure.main)
   (:require hubris.command))
 
+(defn expr-is-quoted?
+  "Return true if given expression is quoted"
+  [expr]
+  (or
+    (re-find #"(^'.*'$)" expr)
+    (re-find #"(^\".*\"$)" expr)))
+
 (defn evaluator
   "Turn given string it into clojure expression and evaluate it."
   [expr]
-  ;; make sure expression exists first; this is checked by taking first token from it
-  ;; as it always contains function name, e.g. 'println "This is foo"' => 'println'
-  (let [func (first (.split expr " "))]
-    (if (hubris.command/command-exists? func)
-      (let [s (str "(" expr ")")
-            e (read-string s)]
-        (eval e))
-      ;; else
-      (printf "Unknown command: '%s'\n" func)
- )))
+  (if (expr-is-quoted? expr)
+    ;; quoted expression simply pass to clojure
+    (eval expr)
+    ;; make sure expression exists first; this is checked by taking first token from it
+    ;; as it always contains function name, e.g. 'println "This is foo"' => 'println'
+    (let [func (first (.split expr " "))]
+      (if (hubris.command/command-exists? func)
+        (let [s (str "(" expr ")")
+              e (read-string s)]
+          (eval e))
+        ;; else
+        (printf "Unknown command: '%s'\n" func)
+) ) ) )
 
 (defn init-prompt
   "Called when prompt is initialized."
