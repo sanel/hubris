@@ -32,7 +32,7 @@ Running _help_ inside shell would give you avaliable commands you can use, like:
 
     ...
 
-For now, main difference from _hbase shell_ is that you explicitly must connect to database, buy running *connect*
+For now, main difference from _hbase shell_ is that you explicitly must connect to database, buy running **connect**
 command. If executed without parameters, it will try to connect to HBase served on localhost; ortherwise on host given
 as parameter.
 
@@ -48,7 +48,7 @@ By default, hubris starts in plain mode and execution 'clojure-mode-on' will swi
     Clojure 1.1.0
     user=> 
 
-As message indicate, executing '(hubris.repl/clojure-mode false)' will return you back to plain mode.
+As message indicate, executing **(hubris.repl/clojure-mode false)** will return you back to plain mode.
 
 ## Installation
 
