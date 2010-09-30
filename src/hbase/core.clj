@@ -75,3 +75,11 @@
     true
     false)
 )
+
+(defn table-exists?
+  "Check if given table exists."
+  [name]
+  (if (and @*hbase-conf* @*hbase-admin*)
+    (.tableExists @*hbase-admin* name)
+    false)
+)

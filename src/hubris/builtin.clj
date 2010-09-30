@@ -59,4 +59,9 @@ Examples:
         (println i))
       (println "Not connected to HBase")
   ) )
+
+  (defcommand exists
+    "Does the named table exist? e.g. 'hbase> exists \"t1\"'"
+    [name]
+    (hbase.core/table-exists? name))
 )
