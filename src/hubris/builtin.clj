@@ -5,6 +5,8 @@
   (:use hubris.command)
   (:use hubris.repl)
   (:use clojure.contrib.str-utils)
+  (:import [org.apache.hadoop.hbase.client Scan HTable]
+           [org.apache.hadoop.hbase.filter FirstKeyOnlyFilter])
   (:require hbase.core))
 
 (defn register-all 
@@ -12,17 +14,22 @@
   []
 
   (defcommand help
-    "Show help."
-    []
-    (doseq [cmd (all-commands)]
-      ;; now, see if we have to adjust spaces due possible multiple lines
-      ;; in documentation string
-      (let [lines (re-split #"\n" (command-doc cmd))]
-        (printf " %-20s %s\n" cmd (first lines))
-        (doseq [line (rest lines)]
-          (printf " %-20s %s\n" " " line))
-        (println ""))
-  ) )
+    "List all commands and show help for each of it. If given command, show help
+for only that command."
+    ([]
+      (doseq [cmd (all-commands)]
+        ;; now, see if we have to adjust spaces due possible multiple lines
+        ;; in documentation string
+        (let [lines (re-split #"\n" (command-doc cmd))]
+          (printf " %-20s %s\n" cmd (first lines))
+          (doseq [line (rest lines)]
+            (printf " %-20s %s\n" " " line))
+          (println "")) ))
+    ([cmd]
+      (if (command-exists? cmd)
+        (println (command-doc (symbol cmd)))
+        (println "No such command") ))
+  )
 
   (defcommand exit
     "Exit from shell."
@@ -77,9 +84,41 @@ Examples:
   ) )
 
   (defcommand exists
-    "Does the named table exist? e.g. 'hbase> exists \"t1\"'"
+    "Does the named table exist? e.g. 'hubris> exists \"t1\"'"
     [name]
-    (hbase.core/table-exists? name))
+    (println (hbase.core/table-exists? name)))
+
+  (defcommand count-rows
+    "Count the number of rows in a table. This operation may take a LONG time (Run '$HADOOP_HOME/bin/hadoop jar hbase.jar rowcount' 
+to run a counting mapreduce job). Current count is shown every 1000 rows by default. Count interval may be optionally specified.
+
+Examples:
+  hubris> count \"t1\"
+  hubris> count \"t1\", 100000"
+    ([tname] (count-rows tname 1000))
+    ;; most of this code is shamelessly stolen from 'hbase shell' implementation
+    ([tname interval]
+      (hbase.core/with-connection
+        (let [scan        (new Scan)
+              scan-filter (new FirstKeyOnlyFilter)
+              rcount      0
+              table       (new HTable (hbase.core/hbase-conf) tname)]
+          (doto scan
+            (.setCaching 10)
+            (.setFilter scan-filter))
+          (loop [iter   (.iterator (.getScanner table scan))
+                 rcount rcount]
+            (if (.hasNext iter)
+              (let [n    (.next iter)
+                    cc   (inc rcount)]
+                (if (= 0 (mod cc interval))
+                  (printf "Current count: %s, row: %s\n" cc
+                                                         (new String (.getRow n)) ))
+                ;; else
+                (recur iter cc))
+              ;; else
+              (printf "%s row(s)\n" rcount)
+  ) ) ) ) ) )
 
   (defcommand shutdown
     "Shut down the cluster."

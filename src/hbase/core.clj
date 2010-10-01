@@ -20,6 +20,16 @@
        nil)
 ) )
 
+(defn hbase-admin
+  "Return HBaseAdmin object or nil if not connected"
+  []
+  @*hbase-admin*)
+
+(defn hbase-conf
+  "Return HBaseConfiguration object or nil if not connected"
+  []
+  @*hbase-conf*)
+
 (defn table-name
   "Return table name from descriptor."
   [descriptor]
@@ -91,15 +101,16 @@
 (defn table-exists?
   "Check if given table exists."
   [name]
-  (with-connection
+  (if (connected?)
     (.tableExists @*hbase-admin* name)
+    false
 ) )
 
 (defn hbase-version
   "Return HBase version, revision and build date as string"
   []
-  (str (VersionInfo/getVersion) ","
-       "r" (VersionInfo/getRevision) ","
+  (str (VersionInfo/getVersion) ", "
+       "r" (VersionInfo/getRevision) ", "
        (VersionInfo/getDate)))
 
 (defn enable-table
