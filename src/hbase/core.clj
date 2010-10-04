@@ -152,3 +152,18 @@
   []
   (with-connection
     (.shutdown @*hbase-admin*)))
+
+(defn get-all-columns
+  "Return all columns from given table as sequence."
+  [name]
+  (let [table (new HTable (hbase-conf) name)
+        td    (.getTableDescriptor table)
+        fam   (.getFamilies td)]
+    (loop [fam fam
+           sq  []]
+      (if fam
+        (recur (next fam)
+               (conj sq (.getNameAsString (first fam))))
+        ;; return sequence
+        sq
+) ) ) )

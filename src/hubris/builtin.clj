@@ -6,10 +6,12 @@
   (:use hubris.repl)
   (:use clojure.contrib.str-utils)
   (:import [org.apache.hadoop.hbase.client Scan HTable]
-           [org.apache.hadoop.hbase.filter FirstKeyOnlyFilter])
+           [org.apache.hadoop.hbase.filter FirstKeyOnlyFilter]
+           [org.apache.hadoop.hbase.util Bytes])
   (:require hbase.core)
   ;; renaming builtin commands as same names are used by the shell
-  (:refer-clojure :rename {count core-count}))
+  (:refer-clojure :rename {count core-count
+                           get   core-get}))
 
 (defn register-all 
   "Register all builtin commands. Done at application startup."
@@ -130,6 +132,77 @@ Examples:
               ;; else
               (printf "%s row(s)\n" rcount)
   ) ) ) ) ) )
+
+  (defcommand scan
+    "Scan table."
+    ([table] (scan table {}))
+    ([table options]
+      (hbase.core/with-connection
+        (let [limit       (core-get options :LIMIT -1)
+              maxlength   (core-get options :MAXLENGTH -1)
+              scan-filter (core-get options :FILTER)
+              startrow    (core-get options :STARTROW "")
+              stoprow     (core-get options :STOPROW "")
+              timestamp   (core-get options :TIMESTAMP)
+              cache       (core-get options :CACHE_BLOCKS true)
+              versions    (core-get options :VERSIONS 1)
+              columns-tmp (core-get options :COLUMNS)
+              scan        (new Scan (.getBytes startrow) 
+                                    (if stoprow 
+                                      (.getBytes stoprow) 
+                                      nil))
+              ;; check what colums type is
+              columns     (cond
+                            (= nil columns-tmp)
+                              (hbase.core/get-all-columns table)
+                            (= java.lang.String (type columns-tmp))
+                              [columns-tmp]
+                            ;; seq type
+                            (= clojure.lang.PersistentVector (type columns-tmp))
+                              columns-tmp
+                            :else
+                              (throw (new java.lang.Exception "Accepted argumens can be only string or sequence")))
+              t             (new HTable (hbase.core/hbase-conf) table)]
+          ;; first add all columns
+          (doseq [c columns]
+            (.addColumns scan c))
+
+          (doto scan
+            (.setFilter scan-filter)
+            (.setCacheBlocks cache)
+            (.setMaxVersions versions))
+
+          (if timestamp
+            (.setTimestamp scan))
+
+          (let [scanner (.getScanner t scan)
+                iter    (.iterator scanner)
+                rcount  0]
+            (loop [iter   iter
+                   rcount rcount]
+              (when (.hasNext iter)
+                (let [n  (.next iter)
+                      cc (inc rcount)]
+                  ;; make sure we obey the limit
+                  (when (or (= limit -1 )
+                            (< cc limit))
+                    (let [rrow (Bytes/toStringBinary (.getRow n))]
+                      (doseq [kv (.list n)]
+                        (printf " %-20s %s\n" rrow
+                                              (str
+                                                "column="
+                                                (new String (.getFamily kv))
+                                                ":"
+                                                (Bytes/toStringBinary (.getQualifier kv))
+                                                ", "
+                                                "timestamp="
+                                                (str (.getTimestamp kv))
+                                                ", "
+                                                "value="
+                                                (Bytes/toStringBinary (.getValue kv)) ))))
+                    ;; next
+                    (recur iter cc) )))))
+  ) ) ) )
 
   (defcommand shutdown
     "Shut down the cluster."
