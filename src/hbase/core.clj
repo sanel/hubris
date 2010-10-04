@@ -9,6 +9,7 @@
 
 (def *hbase-admin* (ref nil))
 (def *hbase-conf*  (ref nil))
+(def *hbase-host*  (ref nil))
 
 (defmacro with-connection
   "Perform action if connected to HBase, or plop error message if not."
@@ -30,6 +31,11 @@
   []
   @*hbase-conf*)
 
+(defn hbase-host
+  "Return hostname where we are connected, or nil if not connected."
+  []
+  @*hbase-host*)
+
 (defn table-name
   "Return table name from descriptor."
   [descriptor]
@@ -43,9 +49,17 @@
     (map table-name (.listTables @*hbase-admin*))
 ) )
 
+;; so 'connect-to' can use it
+(declare connected? disconnect)
+
 (defn connect-to
   "Connect to given host with given zookeeper address."
   [host zookeeper]
+
+  ;; for possible future cleanup
+  (when (connected?)
+    (disconnect))
+
   (dosync
     (ref-set *hbase-conf* (new HBaseConfiguration))
     (doto @*hbase-conf*
@@ -72,7 +86,8 @@
 
   (try
     (dosync
-      (ref-set *hbase-admin* (new HBaseAdmin @*hbase-conf*)) )
+      (ref-set *hbase-admin* (new HBaseAdmin @*hbase-conf*))
+      (ref-set *hbase-host* host) )
     (catch MasterNotRunningException e
       (printf "*** Master is not running (%s)\n" (.getMessage e))
   ) )
@@ -88,6 +103,7 @@
     (dosync
       (ref-set *hbase-admin* nil)
       (ref-set *hbase-conf*  nil)
+      (ref-set *hbase-host*  nil)
 ) ) )
 
 (defn connected?

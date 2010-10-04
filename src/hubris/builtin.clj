@@ -7,7 +7,9 @@
   (:use clojure.contrib.str-utils)
   (:import [org.apache.hadoop.hbase.client Scan HTable]
            [org.apache.hadoop.hbase.filter FirstKeyOnlyFilter])
-  (:require hbase.core))
+  (:require hbase.core)
+  ;; renaming builtin commands as same names are used by the shell
+  (:refer-clojure :rename {count core-count}))
 
 (defn register-all 
   "Register all builtin commands. Done at application startup."
@@ -58,6 +60,15 @@ Examples:
      ([host zk] (hbase.core/connect-to host zk))
   )
 
+  (defcommand host
+    "Return name of host we are connected to."
+    []
+    (let [hh (hbase.core/hbase-host)]
+      (if hh
+        (printf "Connected to '%s'\n" hh)
+        (println "Not connected to any HBase instance")
+  ) ) )
+
   (defcommand list-tables
     "List all tables in hbase"
     []
@@ -88,14 +99,14 @@ Examples:
     [name]
     (println (hbase.core/table-exists? name)))
 
-  (defcommand count-rows
+  (defcommand count
     "Count the number of rows in a table. This operation may take a LONG time (Run '$HADOOP_HOME/bin/hadoop jar hbase.jar rowcount' 
 to run a counting mapreduce job). Current count is shown every 1000 rows by default. Count interval may be optionally specified.
 
 Examples:
   hubris> count \"t1\"
   hubris> count \"t1\", 100000"
-    ([tname] (count-rows tname 1000))
+    ([tname] (count tname 1000))
     ;; most of this code is shamelessly stolen from 'hbase shell' implementation
     ([tname interval]
       (hbase.core/with-connection
