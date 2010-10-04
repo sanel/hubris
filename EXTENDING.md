@@ -12,12 +12,12 @@ look and design.
 ## Introduction
 
 Writing additional commands is done by writing Clojure code and putting it in **<hubris-dir>/commands** directory. Scripts
-will be loaded when hubris is starts.
+will be loaded when hubris is started.
 
 ## Your first command
 
 In this tiny tutorial, we are going to write simple command _pwd_, that will display current working directory. This command
-will use Java API and contain readable documentation, explaining what command does.
+will use Java API and have readable documentation, explaining what command does.
 
 In editor write this:
 
@@ -47,15 +47,16 @@ By running it, you would get a full path from where hubris was executed.
 
 ## Details
 
-**defcommand** the main syntax for adding hubris commands. The name of command will be the same name shown in hubris
+**defcommand** is the main syntax for adding hubris commands. The name of command will be the same name shown in hubris
 shell, and command docstring will be used to describe it in shell.
 
 Everything after that is ordinary Clojure code with direct access to Java API, in our case _File_ class and _getCanonicalPath()_ member.
 
-If you are going to use additional Java libraries (like HBase API), you can simply _import_ them, as done is ordinary Clojure code.
-Here is the same _pwd_ example, where we are going to import File class, instead to use it with full name.
+If you are going to use additional Java libraries (like HBase API), you can simply import them. Here is the same _pwd_ example, where 
+we are going to import File class, instead to use it with full package name.
 
     (use 'java.io.File)
+
     (defcommand pwd
       "Print current directory."
       []
