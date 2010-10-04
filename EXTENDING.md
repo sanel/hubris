@@ -1,4 +1,4 @@
-# Extending hubris
+# Extending Hubris
 
 Hubris is able to be extended with additional commands, available for use from
 hubris shell. These commands can perform HBase related or unrelated tasks, as you have

@@ -7,7 +7,8 @@ Key features:
 
 * speed - much faster startup and runtime than JRuby version, as code is compiled to java bytecode
 * familiar - execute commands as you did in old _hbase shell_
-* extendible - you can easily add your own commands, writing [Clojure](http://clojure.org) script and putting it in appropriate directory
+* extendible - you can easily add your own commands, writing [Clojure](http://clojure.org) script and putting it in appropriate directory. Check
+[Extending Hubris](http://github.com/sanel/hubris/blob/master/EXTENDING.md).
 * connectible - connect to local HBase instance or remote by simply running _connect HOSTNAME_
 * ... (here should comes other features after they gets implemented ;))
 
