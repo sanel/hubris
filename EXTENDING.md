@@ -55,7 +55,7 @@ Everything after that is ordinary Clojure code with direct access to Java API, i
 If you are going to use additional Java libraries (like HBase API), you can simply import them. Here is the same _pwd_ example, where 
 we are going to import File class, instead to use it with full package name.
 
-    (use 'java.io.File)
+    (import 'java.io.File)
 
     (defcommand pwd
       "Print current directory."
