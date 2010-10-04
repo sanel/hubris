@@ -6,9 +6,9 @@ on steroids, providing alternative to quite limited _hbase shell_ command.
 Key features:
 
 * speed - much faster startup and runtime than JRuby version, as code is compiled to java bytecode
-* familiar - execute comands as you did in old _hbase shell_
+* familiar - execute commands as you did in old _hbase shell_
 * extendible - you can easily add your own commands, writing [Clojure](http://clojure.org) script and putting it in appropriate directory
-* connectable - connect it to local HBase instance or remote by simply running _connect HOSTNAME_
+* connectible - connect to local HBase instance or remote by simply running _connect HOSTNAME_
 * ... (here should comes other features after they gets implemented ;))
 
 ## Usage
@@ -17,7 +17,7 @@ To start hubris shell, simply run
 
     > <hubris-install-dir>/bin/hubris
 
-Running _help_ inside shell would give you avaliable commands you can use, like:
+Running _help_ inside shell would give you available commands you can use, like:
 
     Hbase UBer Interactive Shell; enter 'help<RETURN>' to see available commands or 'exit<RETURN>' to quit.
     hubris> help<ENTER>
@@ -32,16 +32,16 @@ Running _help_ inside shell would give you avaliable commands you can use, like:
 
     ...
 
-For now, main difference from _hbase shell_ is that you explicitly must connect to database, buy running **connect**
-command. If executed without parameters, it will try to connect to HBase served on localhost; ortherwise on host given
+For now, the main difference from _hbase shell_ is that you explicitly must connect to database, buy running **connect**
+command. If executed without parameters, it will try to connect to HBase served on localhost; otherwise on host given
 as parameter.
 
 Hubris also provides two modes for interaction with HBase:
 
-* plain - you executed commands in form as you did in _hbase shell_
-* clojure - access to Clojure REPL, from where you can use hubris HBase API by writing Clojure code
+* plain mode - you executed commands in form as you did in _hbase shell_
+* clojure mode - gives you access to Clojure REPL, from where you can use hubris or HBase API by writing Clojure code
 
-By default, hubris starts in plain mode and execution 'clojure-mode-on' will switch you to clojure more, like
+By default, hubris starts in plain mode and typing 'clojure-mode-on' will switch you to Clojure mode, like
 
     hubris> clojure-mode-on
     You are now in clojure mode. To return back, type '(hubris.repl/clojure-mode false)'.
@@ -52,8 +52,7 @@ As message indicate, executing **(hubris.repl/clojure-mode false)** will return 
 
 ## Installation
 
-To install hubris, simply unpack archive in desired directory. All required files are expected
-to be in hubris installation directory, which is true by default.
+To install hubris, simply unpack archive in desired directory.
 
 ## License
 
