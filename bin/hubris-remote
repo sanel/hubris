@@ -1,0 +1,60 @@
+#!/bin/sh
+
+program=`basename $0`
+ssh_bin=`which ssh`
+host=""
+
+# default HBase ports
+hmaster_port="60000"
+zk_port="2181"
+
+help() {
+   echo "Usage: $program [OPTIONS]"
+   echo "Secure connection toward HBase cluster"
+   echo "Options:"
+   echo "   --help         this help"
+   echo "   --debug        display various details from tunneling connection"
+   echo "   --dest  [HOST] explicitly set location visible from host connected to"
+   echo "                  (default is connection host)"
+}
+
+if test $# -eq 0; then
+   help
+   exit 1
+fi
+
+case $1 in
+   "--help")
+   help
+   exit 0
+   ;;
+   "--debug")
+   verbosity="-vvv"
+   shift
+   ;;
+   "--dest")
+   tunnel_dest="$2"
+   if test "x$tunnel_dest" = "x"; then
+      echo "This option requires a parameter"
+      exit 1
+   fi
+   shift
+   shift
+   ;;
+   *)
+   host="$1"
+   if test "x$tunnel_dest" = "x"; then
+      tunnel_dest=`echo $host | sed 's/.*@//'`
+   fi
+esac
+
+if test "x$ssh_bin" = "x"; then
+   echo "Unable to find ssh. This program is using ssh, so you must install it first"
+fi
+
+if test "x$host" = "x"; then
+   echo "Destination address is not specified"
+   exit 1
+fi
+
+echo $ssh_bin "$1" -L $hmaster_port:$tunnel_dest:$hmaster_port -L $zk_port:$tunnel_dest:$zk_port -N $verbosity
