@@ -8,14 +8,26 @@ host=""
 hmaster_port="60000"
 zk_port="2181"
 
+check_param() {
+   if test "x$1" = "x"; then
+      echo "This option requires a parameter"
+      exit 1
+   fi
+}
+
 help() {
-   echo "Usage: $program [OPTIONS]"
-   echo "Secure connection toward HBase cluster"
+   echo "Usage: $program [OPTIONS] [HOST]"
+   echo "Secure connection toward HBase cluster via ssh tunneling"
    echo "Options:"
-   echo "   --help         this help"
-   echo "   --debug        display various details from tunneling connection"
-   echo "   --dest  [HOST] explicitly set location visible from host connected to"
-   echo "                  (default is connection host)"
+   echo "   --help                 this help"
+   echo "   --debug                display various details from tunneling connection"
+   echo "   --hmaster-port [NUM]   explicitly set HMaster port (default is 60000)"
+   echo "   --zk-port      [NUM]   explicitly set Zookeeper port (default is 2181)"
+   echo "   --dest         [HOST]  explicitly set location visible from host connected to (default is connection host)"
+   echo ""
+   echo "Examples:"
+   echo "   $program foo@foo.com                (connect to 'foo.com' as user 'foo', assuming HBase/Zookeeper are running on the same host)"
+   echo "   $program foo@foo.com --dest baz.com (connect to 'foo.com' as 'foo' user and tunnel connections to 'baz.com' where HBase/Zookeeper are running)"
 }
 
 if test $# -eq 0; then
@@ -23,30 +35,37 @@ if test $# -eq 0; then
    exit 1
 fi
 
-case $1 in
-   "--help")
-   help
-   exit 0
-   ;;
-   "--debug")
-   verbosity="-vvv"
-   shift
-   ;;
-   "--dest")
-   tunnel_dest="$2"
-   if test "x$tunnel_dest" = "x"; then
-      echo "This option requires a parameter"
+while [ $# -gt 0 ]; do
+   case $1 in
+      "--help")
+      help
       exit 1
-   fi
-   shift
-   shift
-   ;;
-   *)
-   host="$1"
-   if test "x$tunnel_dest" = "x"; then
-      tunnel_dest=`echo $host | sed 's/.*@//'`
-   fi
-esac
+      ;;      
+      "--debug")
+      verbosity="-vvv"
+      shift
+      ;;
+      "--hmaster-port")
+      check_param $2
+      hmaster_port="$2"
+      shift 2
+      ;;
+      "--zk-port")
+      check_param $2
+      zk_port="$2"
+      shift 2
+      ;;
+      "--dest")
+      check_param $2
+      tunnel_dest="$2"
+      shift 2
+      ;;
+      *)
+      host="$1"
+      shift
+      ;;
+   esac
+done
 
 if test "x$ssh_bin" = "x"; then
    echo "Unable to find ssh. This program is using ssh, so you must install it first"
@@ -57,4 +76,9 @@ if test "x$host" = "x"; then
    exit 1
 fi
 
-echo $ssh_bin "$1" -L $hmaster_port:$tunnel_dest:$hmaster_port -L $zk_port:$tunnel_dest:$zk_port -N $verbosity
+# make sure 'tunnel_dest' has some value if not set
+if test "x$tunnel_dest" = "x"; then
+   tunnel_dest=`echo $host | sed 's/.*@//'`
+fi
+
+$ssh_bin $host -L $hmaster_port:$tunnel_dest:$hmaster_port -L $zk_port:$tunnel_dest:$zk_port -N $verbosity
