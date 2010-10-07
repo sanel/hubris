@@ -96,6 +96,24 @@ Examples:
       (println "Table already disabled")
   ) )
 
+  (defcommand truncate
+    "Disables, drops and recreates the specified table."
+    [table]
+    (hbase.core/with-connection
+      ;; first we must get descriptor, as deleting table will remove it
+      (let [tt (new HTable table)
+            td (.getTableDescriptor tt)]
+
+        (printf "Truncating %s; it may take a while\n" table)
+        (when (hbase.core/table-enabled? table)
+          (println "Disabling table...")
+          (hbase.core/disable-table table))
+
+        (println "Dropping table...")
+        (.deleteTable (hbase.core/hbase-admin) table)
+        (println "Creating table...")
+        (.createTable (hbase.core/hbase-admin) td) )))
+
   (defcommand exists
     "Does the named table exist? e.g. 'hubris> exists \"t1\"'"
     [name]
@@ -141,7 +159,7 @@ To scan all members of a column family, leave the qualifier empty as in 'col_fam
 Examples:
   hubris> scan \".META.\"
   hubris> scan \".META.\" {:COLUMNS \"info:regioninfo\"}
-  hubris> scan \"t1\" {:COLUMNS [\"c1\", \"c2\"], :LIMIT 10, :STARTROW => \"xyz\"}
+  hubris> scan \"t1\" {:COLUMNS [\"c1\", \"c2\"], :LIMIT 10, :STARTROW \"xyz\"}
            
 For experts, there is an additional option -- CACHE_BLOCKS -- which switches block caching for the scanner on (true) or off (false).
 By default it is enabled.

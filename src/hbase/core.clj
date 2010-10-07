@@ -3,7 +3,7 @@
   "Code for interfacing with HBase. Unfortunately, all available clojure
   wrappers for HBase are pretty much unusable for hubris needs."
   (:gen-class)
-  (:import [org.apache.hadoop.hbase HBaseConfiguration MasterNotRunningException]
+  (:import [org.apache.hadoop.hbase HBaseConfiguration MasterNotRunningException HConstants]
            [org.apache.hadoop.hbase.client HBaseAdmin HTable Put Get Scan]
            [org.apache.hadoop.hbase.util VersionInfo]))
 
