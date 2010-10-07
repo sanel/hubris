@@ -39,7 +39,12 @@
           (= len 1)
             (println "Missing redirection argument")
           (= len 2)
-            (printf "First: %s to %s\n" (nth tokens 0) (nth tokens 1))
+            (let [eexpr  (nth tokens 0)
+                  ;; trim possible whitespaces so filename does not contains them
+                  output (.trim (nth tokens 1))]
+              (with-open [stream (new java.io.FileWriter output)]
+                (binding [*out* stream]
+                  (evaluator eexpr) )))
           :else
             (println "Ambiguous redirection. Only single redirection is supported") )))
     ;; else directly evaluate it
