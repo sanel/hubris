@@ -28,6 +28,24 @@
         (printf "Unknown command: '%s'\n" func)
 ) ) ) )
 
+(defn evaluate-with-redirection
+  "Scan expression for possible redirection(s), and if found, bind output to it. If not, proceed as usual."
+  [expr]
+  (if (re-find #"\s+>\s+" expr)
+    (do
+      (let [tokens    (.split expr "\\s+>\\s+")
+            len       (count tokens)]
+        (cond
+          (= len 1)
+            (println "Missing redirection argument")
+          (= len 2)
+            (printf "First: %s to %s\n" (nth tokens 0) (nth tokens 1))
+          :else
+            (println "Ambiguous redirection. Only single redirection is supported") )))
+    ;; else directly evaluate it
+    (evaluator expr)
+) )
+
 (defn init-prompt
   "Called when prompt is initialized."
   []
@@ -62,7 +80,7 @@
     :prompt   repl-prompt
     :read     repl-reader
     :print    repl-print
-    :eval     evaluator)
+    :eval     evaluate-with-redirection)
 )
 
 (defn clojure-mode
