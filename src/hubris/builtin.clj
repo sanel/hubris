@@ -134,7 +134,21 @@ Examples:
   ) ) ) ) ) )
 
   (defcommand scan
-    "Scan table."
+    "Scan a table; pass table name and optionally a dictionary of scanner specifications.  Scanner specifications may include one or 
+more of the following: LIMIT, STARTROW, STOPROW, TIMESTAMP, or COLUMNS.  If no columns are specified, all columns will be scanned.
+To scan all members of a column family, leave the qualifier empty as in 'col_family:'.  
+
+Examples:
+  hubris> scan \".META.\"
+  hubris> scan \".META.\" {:COLUMNS \"'info:regioninfo\"}
+  hubris> scan \"t1\" {:COLUMNS [\"'c1\"', \"'c2\"'], :LIMIT 10, :STARTROW => \"xyz\"}
+           
+For experts, there is an additional option -- CACHE_BLOCKS -- which switches block caching for the scanner on (true) or off (false).
+By default it is enabled.
+
+Examples:
+  hubris> scan \"t1\", {:COLUMNS [\"c1\", \"c2\"], :CACHE_BLOCKS false}"
+
     ([table] (scan table {}))
     ([table options]
       (hbase.core/with-connection
@@ -188,18 +202,11 @@ Examples:
                             (< cc limit))
                     (let [rrow (Bytes/toStringBinary (.getRow n))]
                       (doseq [kv (.list n)]
-                        (printf " %-20s %s\n" rrow
-                                              (str
-                                                "column="
-                                                (new String (.getFamily kv))
-                                                ":"
-                                                (Bytes/toStringBinary (.getQualifier kv))
-                                                ", "
-                                                "timestamp="
-                                                (str (.getTimestamp kv))
-                                                ", "
-                                                "value="
-                                                (Bytes/toStringBinary (.getValue kv)) ))))
+                        (printf " %-20s column=%s:%s, timestamp=%s, value=%s\n", rrow
+                                                                                 (new String (.getFamily kv))
+                                                                                 (Bytes/toStringBinary (.getQualifier kv))
+                                                                                 (str (.getTimestamp kv))
+                                                                                 (Bytes/toStringBinary (.getValue kv)) )))
                     ;; next
                     (recur iter cc) )))))
   ) ) ) )
