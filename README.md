@@ -37,7 +37,7 @@ For now, the main difference from _hbase shell_ is that you explicitly must conn
 command. If executed without parameters, it will try to connect to HBase served on localhost; otherwise on host given
 as parameter.
 
-Hubris also provides two modes for interaction with HBase:
+Hubris provides two modes:
 
 * plain mode - you executed commands in form as you did in _hbase shell_
 * clojure mode - gives you access to Clojure REPL, from where you can use hubris or HBase API by writing Clojure code
