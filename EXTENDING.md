@@ -75,7 +75,7 @@ With **defcommand** you can also make a command to accept optional arguments, li
       ([arg]
         (printf "Argument is: %s\n" arg) ))
 
-and save it in _<hubris-dir>/commands/print_me.clj_. When executed in hubris shell, you should something like:
+and save it in _<hubris-dir>/commands/print_me.clj_. When executed in hubris shell, you will get something like:
 
     hubris> print-me<ENTER>
     No arguments
