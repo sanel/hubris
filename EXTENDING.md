@@ -62,3 +62,31 @@ we are going to import File class, instead to use it with full package name.
       []
       (.getCanonicalPath (new File ".")) )
 
+## Making connections to HBase
+
+Although you can directly use HBase API, hubris provides few additional methods for reusing currently made connection and
+the advice is to use them. The main reason for this is when user connect to desired location (via **connect** command), your
+command does not make unnecessary connections. Also, with this method, you will be able to know was that connection successful
+or user tried another solution.
+
+Here we will implement _table-exists_ command, that should print _true_ or _false_ in shell, or write some error message when
+connection was not made.
+
+    (defcommand table-exists
+      "Check if given table exists."
+      [table]
+      (hbase.core/with-connection
+        (let [admin (hbase.core/hbase-admin)
+              found (.tableExists admin table)]
+
+          (if found
+            (println "true")
+            (println "false") ))))
+
+**with-connection** macro will make sure we are successfully connected. If not, the code will not be executed and user
+will get message like _Not connected to database_.
+
+**hbase-admin** function will return HBaseAdmin object for current connection, from where you can use 
+[HBase API](http://hbase.apache.org/docs/current/api/overview-summary.html) (_tableExists_ is part of it).
+
+Part of these functions is **hbase-conf**, returning HBaseConfiguration object.
