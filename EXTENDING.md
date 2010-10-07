@@ -62,6 +62,27 @@ we are going to import File class, instead to use it with full package name.
       []
       (.getCanonicalPath (new File ".")) )
 
+## Commands with optional arguments
+
+With **defcommand** you can also make a command to accept optional arguments, like:
+
+    (defcommand print-me
+      "Just print argument, or notify when there are no arguments."
+      ;; called with no arguments
+      ([]
+        (println "No arguments"))
+      ;; called with single argument
+      ([arg]
+        (printf "Argument is: %s\n" arg) ))
+
+and save it in _<hubris-dir>/commands/print_me.clj_. When executed in hubris shell, you should something like:
+
+    hubris> print-me<ENTER>
+    No arguments
+
+    hubris> print-me "Olaa"<ENTER>
+    Argument is: Olaa
+
 ## Making connections to HBase
 
 Although you can directly use HBase API, hubris provides few additional methods for reusing currently made connection and
