@@ -11,30 +11,38 @@
     (re-find #"(^'.*'$)" expr)
     (re-find #"(^\".*\"$)" expr)))
 
+(defn single-to-double-quotes
+  "Try to replace \"'\" with \"\"\" so clojure can evaluate it"
+  [expr]
+  (if (re-find #"'.*'" expr)
+    (.replace expr "'" "\"")
+    expr))
+
 (defn evaluator
   "Turn given string it into clojure expression and evaluate it."
   [expr]
-  (if (expr-is-quoted? expr)
-    ;; quoted expression simply pass to clojure
-    (eval expr)
-    ;; make sure expression exists first; this is checked by taking first token from it
-    ;; as it always contains function name, e.g. 'println "This is foo"' => 'println'
-    (let [func (first (.split expr " "))]
-      (if (hubris.command/command-exists? func)
-        (let [s (str "(" expr ")")
-              e (read-string s)]
-          (eval e))
-        ;; else
-        (printf "Unknown command: '%s'\n" func)
-) ) ) )
+  (let [expr (single-to-double-quotes expr)]
+    (if (expr-is-quoted? expr)
+      ;; quoted expression simply pass to clojure
+      (eval expr)
+      ;; make sure expression exists first; this is checked by taking first token from it
+      ;; as it always contains function name, e.g. 'println "This is foo"' => 'println'
+      (let [func (first (.split expr " "))]
+        (if (hubris.command/command-exists? func)
+          (let [s (str "(" expr ")")
+                e (read-string s)]
+            (eval e))
+          ;; else
+          (printf "Unknown command: '%s'\n" func)
+) ) ) ) )
 
 (defn evaluate-with-redirection
   "Scan expression for possible redirection(s), and if found, bind output to it. If not, proceed as usual."
   [expr]
   (if (re-find #"\s+>\s+" expr)
     (do
-      (let [tokens    (.split expr "\\s+>\\s+")
-            len       (count tokens)]
+      (let [tokens (.split expr "\\s+>\\s+")
+            len    (count tokens)]
         (cond
           (= len 1)
             (println "Missing redirection argument")
