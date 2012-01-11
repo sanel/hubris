@@ -13,13 +13,15 @@ RLWRAP=`which rlwrap`
 breakchars="(){}[],^%$#@\"\";:''|\\"
 
 help() {
-   echo "Usage: $program [OPTIONS]"
-   echo "$program is a Hbase UBeR Interactive Shell"
-   echo "Options:"
-   echo "   --help       this help"
-   echo "   --version    show version"
-   echo "   --clojure    go directly in clojure mode"
-   echo "   --debug      display various details from hbase logger and $program"
+   cat <<EOF
+Usage: $program [OPTIONS]
+$program is a Hbase UBeR Interactive Shell
+Options:
+   --help       this help
+   --version    show version
+   --clojure    go directly in clojure mode
+   --debug      display various details from hbase logger and $program
+EOF
 }
 
 if test $# -ne 0; then
