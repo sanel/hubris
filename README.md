@@ -7,20 +7,20 @@ Key features:
 
 * speed - much faster startup and runtime than JRuby version, as code is compiled to java bytecode
 * familiar - execute commands as you did in old _hbase shell_
-* extendible - you can easily add your own commands, writing [Clojure](http://clojure.org) script and putting it in appropriate directory. Check
+* extendable - you can easily add your own commands, writing [Clojure](http://clojure.org) script and putting it in appropriate directory. Check
 [Extending Hubris](http://github.com/sanel/hubris/blob/master/EXTENDING.md).
-* connectible - connect to local HBase instance or remote by simply running _connect HOSTNAME_
+* connectable - connect to local HBase instance or remote by simply running _connect HOSTNAME_
 * ... (here should comes other features after they gets implemented ;))
 
 ## Usage
 
 To start hubris shell, simply run
 
-    > <hubris-install-dir>/bin/hubris
+    $ <hubris-install-dir>/bin/hubris
 
 Running _help_ inside shell would give you available commands you can use, like:
 
-    Hbase UBer Interactive Shell; enter 'help<RETURN>' to see available commands or 'exit<RETURN>' to quit.
+    Hbase UBeR Interactive Shell; enter 'help<RETURN>' to see available commands or 'exit<RETURN>' to quit.
     hubris> help<ENTER>
 
     help                 Show help.
@@ -57,4 +57,4 @@ To install hubris, simply unpack archive in desired directory.
 
 ## License
 
-FIXME: write
+Copyright (c) Sanel Zukan. The project is licensed under EPL 1.0.

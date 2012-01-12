@@ -1,4 +1,3 @@
-;; vim:ft=lisp:ts=3:sw=3:expandtab
 (ns hbase.core
   "Code for interfacing with HBase. Unfortunately, all available clojure
   wrappers for HBase are pretty much unusable for hubris needs."
@@ -12,14 +11,13 @@
 (def *hbase-host*  (ref nil))
 
 (defmacro with-connection
-  "Perform action if connected to HBase, or plop error message if not."
+  "Perform action if connected to HBase or plop error message if not."
   [& body]
   `(if (and @*hbase-admin* @*hbase-conf*)
      (do ~@body)
      (do
        (println "Not connected to database")
-       nil)
-) )
+       nil )))
 
 (defn hbase-admin
   "Return HBaseAdmin object or nil if not connected"
@@ -46,8 +44,7 @@
   "Return list of table names."
   []
   (with-connection
-    (map table-name (.listTables @*hbase-admin*))
-) )
+    (map table-name (.listTables @*hbase-admin*)) ))
 
 ;; so 'connect-to' can use it
 (declare connected? disconnect)
@@ -103,24 +100,21 @@
     (dosync
       (ref-set *hbase-admin* nil)
       (ref-set *hbase-conf*  nil)
-      (ref-set *hbase-host*  nil)
-) ) )
+      (ref-set *hbase-host*  nil) )))
 
 (defn connected?
   "Return true if connected."
   []
   (if (and @*hbase-conf* @*hbase-admin*)
     true
-    false)
-)
+    false))
 
 (defn table-exists?
   "Check if given table exists."
   [name]
   (if (connected?)
     (.tableExists @*hbase-admin* name)
-    false
-) )
+    false))
 
 (defn hbase-version
   "Return HBase version, revision and build date as string"
@@ -165,5 +159,4 @@
         (recur (next fam)
                (conj sq (.getNameAsString (first fam))))
         ;; return sequence
-        sq
-) ) ) )
+        sq ))))

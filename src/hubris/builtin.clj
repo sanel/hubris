@@ -1,4 +1,3 @@
-;; vim:ft=lisp:ts=3:sw=3:expandtab
 (ns hubris.builtin
   "Builtin hubris commands."
   (:gen-class)
