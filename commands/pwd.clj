@@ -1,4 +1,4 @@
-
+;; example of custom command
 (defcommand pwd
   "Print current directory."
   []
