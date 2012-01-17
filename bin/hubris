@@ -54,9 +54,10 @@ if test "x$HUBRIS_LIB" = "x"; then
 fi
 
 if test -d "$HUBRIS_LIB"; then
-   export CLASSPATH="$CLASSPATH:`find $HUBRIS_LIB -name "*.jar" | sort | tr '\n' ':'`"
+   CLASSES="$CLASSPATH:`find $HUBRIS_LIB -name "*.jar" | sort | tr '\n' ':'`"
 fi
 
+# resolve what kind of our jar to use; the big one (standalone) or the little one
 if test -f $hubris_jar_standalone; then
    hubris_jar=$hubris_jar_standalone
 else
@@ -64,8 +65,11 @@ else
       hubris_jar=$hubris_jar_plain
    else
       echo "Unable to find application jar file. Did you compiled $program???"
+      exit 1
    fi
 fi
+
+CLASSES="$CLASSES:$hubris_jar"
 
 if test "x$RLWRAP" != "x"; then
    [ "x$HUBRIS_DEBUG" = "x1" ] && echo "Using rlwrap..."
@@ -75,4 +79,4 @@ else
    COMMAND=""
 fi
 
-$COMMAND java -jar $hubris_jar $clojure_mode
+$COMMAND java -cp $CLASSES hubris.core $clojure_mode
