@@ -60,7 +60,7 @@ Hubris comes in two versions:
 
 Normal version is marked as _hubris-VERSION.tar.gz_ and the big one as _hubris-VERSION-full.tar.gz_.
 
-To use normal version, you must create 'lib' directory inside unpacked hubris folder, and copy clojure, clojure-contrib,
+To use normal version, you must create _lib_ directory inside unpacked hubris folder, and copy clojure, clojure-contrib,
 hadoop/hbase (with all their dependencies) jars. Without this operation, you would get this error:
 
     Exception in thread "main" java.lang.NoClassDefFoundError: clojure/lang/IFn
@@ -75,9 +75,9 @@ hadoop/hbase (with all their dependencies) jars. Without this operation, you wou
 
 This means required jars (in this case clojure jars) are not found.
 
-Alternative to copying all these dependencies is to simply export 'CLASSPATH' with all jars for clojure, clojure-contrib,
-hadoop and hbase; hubris will happily pick them up. Or, if you would like to use different folder or location than 'lib' in
-currently unpacked folder, simply export 'HUBRIS_LIB' to target location.
+Alternative to copying all these dependencies is to simply export _CLASSPATH_ with all jars for clojure, clojure-contrib,
+hadoop and hbase; hubris will happily pick them up. Or, if you would like to use different folder or location than _lib_ in
+currently unpacked folder, simply export _HUBRIS_LIB_ to target location.
 
 With explicitly setting dependent jars, hubris can reuse already installed libraries, without providing duplicate one.
 
