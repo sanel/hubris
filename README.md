@@ -58,7 +58,7 @@ Hubris comes in two versions:
 * normal - without bundled dependencies (Clojure, Hadoop, Hbase and etc.)
 * big - with all dependencies
 
-Normal version is marked as _hubris-<VERSION>.tar.gz_ and the big one as _hubris-<VERSION>-full.tar.gz_.
+Normal version is marked as _hubris-VERSION.tar.gz_ and the big one as _hubris-VERSION-full.tar.gz_.
 
 To use normal version, you must create 'lib' directory inside unpacked hubris folder, and copy clojure, clojure-contrib,
 hadoop/hbase (with all their dependencies) jars. Without this operation, you would get this error:
@@ -75,13 +75,13 @@ hadoop/hbase (with all their dependencies) jars. Without this operation, you wou
 
 This means required jars (in this case clojure jars) are not found.
 
-Alternative to copying all these dependencies is to simply export _CLASSPATH_ with all jars for clojure, clojure-contrib,
+Alternative to copying all these dependencies is to simply export 'CLASSPATH' with all jars for clojure, clojure-contrib,
 hadoop and hbase; hubris will happily pick them up. Or, if you would like to use different folder or location than 'lib' in
-currently unpacked folder, simply export _HUBRIS__LIB_ to target location.
+currently unpacked folder, simply export 'HUBRIS_LIB' to target location.
 
 With explicitly setting dependent jars, hubris can reuse already installed libraries, without providing duplicate one.
 
-If you are not comfortable with this feature or find problem using normal version, just download the big one (_hubris-<VERSION>-full.tar.gz_).
+If you are not comfortable with this feature or find problem using normal version, just download the big one (_hubris-VERSION-full.tar.gz_).
 
 ## License
 
