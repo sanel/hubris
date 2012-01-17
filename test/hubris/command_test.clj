@@ -1,5 +1,6 @@
 (ns hubris.command-test
   (:use [hubris.command] :reload-all)
+  (:use [hubris.builtin]) ;; to prevent exceptions from 'defcommand'
   (:use [clojure.test]))
 
 (deftest test-count-commands
