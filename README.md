@@ -53,7 +53,35 @@ As message indicate, executing **(hubris.repl/clojure-mode false)** will return 
 
 ## Installation
 
-To install hubris, simply unpack archive in desired directory.
+Hubris comes in two versions:
+
+* normal - without bundled dependencies (Clojure, Hadoop, Hbase and etc.)
+* big - with all dependencies
+
+Normal version is marked as _hubris-<VERSION>.tar.gz_ and the big one as _hubris-<VERSION>-full.tar.gz_.
+
+To use normal version, you must create 'lib' directory inside unpacked hubris folder, and copy clojure, clojure-contrib,
+hadoop/hbase (with all their dependencies) jars. Without this operation, you would get this error:
+
+    Exception in thread "main" java.lang.NoClassDefFoundError: clojure/lang/IFn
+    Caused by: java.lang.ClassNotFoundException: clojure.lang.IFn
+            at java.net.URLClassLoader$1.run(URLClassLoader.java:217)
+            at java.security.AccessController.doPrivileged(Native Method)
+            at java.net.URLClassLoader.findClass(URLClassLoader.java:205)
+            at java.lang.ClassLoader.loadClass(ClassLoader.java:321)
+            at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:294)
+            at java.lang.ClassLoader.loadClass(ClassLoader.java:266)
+    Could not find the main class: hubris.core. Program will exit
+
+This means required jars (in this case clojure jars) are not found.
+
+Alternative to copying all these dependencies is to simply export _CLASSPATH_ with all jars for clojure, clojure-contrib,
+hadoop and hbase; hubris will happily pick them up. Or, if you would like to use different folder or location than 'lib' in
+currently unpacked folder, simply export _HUBRIS__LIB_ to target location.
+
+With explicitly setting dependent jars, hubris can reuse already installed libraries, without providing duplicate one.
+
+If you are not comfortable with this feature or find problem using normal version, just download the big one (_hubris-<VERSION>-full.tar.gz_).
 
 ## License
 

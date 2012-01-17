@@ -53,8 +53,11 @@ if test "x$HUBRIS_LIB" = "x"; then
    HUBRIS_LIB="$hubris_dir/lib"
 fi
 
+# pick user selected classes
+CLASSES="$CLASSPATH"
+
 if test -d "$HUBRIS_LIB"; then
-   CLASSES="$CLASSPATH:`find $HUBRIS_LIB -name "*.jar" | sort | tr '\n' ':'`"
+   CLASSES=":`find $HUBRIS_LIB -name "*.jar" | sort | tr '\n' ':'`"
 fi
 
 # resolve what kind of our jar to use; the big one (standalone) or the little one
