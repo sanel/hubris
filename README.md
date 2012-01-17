@@ -7,9 +7,9 @@ Key features:
 
 * speed - much faster startup and runtime than JRuby version, as code is compiled to java bytecode
 * familiar - execute commands as you did in old _hbase shell_
-* extendable - you can easily add your own commands, writing [Clojure](http://clojure.org) script and putting it in appropriate directory. Check
+* extendible - you can easily add your own commands, writing [Clojure](http://clojure.org) script and putting it in appropriate directory. Check
 [Extending Hubris](http://github.com/sanel/hubris/blob/master/EXTENDING.md).
-* connectable - connect to local HBase instance or remote by simply running _connect HOSTNAME_
+* connectible - connect to local HBase instance or remote by simply running _connect HOSTNAME_
 * ... (here should comes other features after they gets implemented ;))
 
 ## Usage
@@ -60,8 +60,8 @@ Hubris comes in two versions:
 
 Normal version is marked as _hubris-VERSION.tar.gz_ and the big one as _hubris-VERSION-full.tar.gz_.
 
-To use normal version, you must create _lib_ directory inside unpacked hubris folder, and copy clojure, clojure-contrib,
-hadoop/hbase (with all their dependencies) jars. Without this operation, you would get this error:
+To use normal version, you must create _lib_ directory inside unpacked hubris folder and copy clojure, clojure-contrib,
+hadoop and hbase jars (with all their dependencies). Without doing this, you would get this error:
 
     Exception in thread "main" java.lang.NoClassDefFoundError: clojure/lang/IFn
     Caused by: java.lang.ClassNotFoundException: clojure.lang.IFn
@@ -75,9 +75,9 @@ hadoop/hbase (with all their dependencies) jars. Without this operation, you wou
 
 This means required jars (in this case clojure jars) are not found.
 
-Alternative to copying all these dependencies is to simply export _CLASSPATH_ with all jars for clojure, clojure-contrib,
-hadoop and hbase; hubris will happily pick them up. Or, if you would like to use different folder or location than _lib_ in
-currently unpacked folder, simply export _HUBRIS_LIB_ to target location.
+Alternative to copying all these dependencies is to simply export _CLASSPATH_ with all named jars, where hubris will
+happily pick them up. Or, if you would like to use different folder or location than _lib_ in currently unpacked folder,
+simply export _HUBRIS_LIB_ to target location.
 
 With explicitly setting dependent jars, hubris can reuse already installed libraries, without providing duplicate one.
 
