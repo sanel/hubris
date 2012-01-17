@@ -6,7 +6,9 @@ VERSION="0.1.0"
 program=`basename $0`
 hubris_dir="`dirname $0`"
 hubris_dir=`echo $hubris_dir | sed 's/\/bin//'`
-hubris_jar="$hubris_dir/hubris-$VERSION-standalone.jar"
+
+hubris_jar_standalone="$hubris_dir/hubris-$VERSION-standalone.jar"
+hubris_jar_plain="$hubris_dir/hubris-$VERSION.jar"
 
 # rlwrap stuff
 RLWRAP=`which rlwrap`
@@ -46,13 +48,23 @@ if test $# -ne 0; then
    esac
 fi
 
-# find and resolve dependencies first
-CLASSES="$hubris_dir/lib"
-export CLASSPATH="$CLASSPATH:`find $CLASSES -name "*.jar" | tr '\n' ':'`"
+# find and resolve dependencies first in default directory or user set HUBRIS_LIB environmnet var
+if test "x$HUBRIS_LIB" = "x"; then
+   HUBRIS_LIB="$hubris_dir/lib"
+fi
 
-if test ! -f $hubris_jar; then
-   echo "Unable to find application jar file. Did you compiled $program???"
-   exit 1
+if test -d "$HUBRIS_LIB"; then
+   export CLASSPATH="$CLASSPATH:`find $HUBRIS_LIB -name "*.jar" | sort | tr '\n' ':'`"
+fi
+
+if test -f $hubris_jar_standalone; then
+   hubris_jar=$hubris_jar_standalone
+else
+   if test -f $hubris_jar_plain; then
+      hubris_jar=$hubris_jar_plain
+   else
+      echo "Unable to find application jar file. Did you compiled $program???"
+   fi
 fi
 
 if test "x$RLWRAP" != "x"; then

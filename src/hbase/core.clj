@@ -71,15 +71,11 @@
   ;; setup logging verbosity
   (if (= "1" (System/getenv "HUBRIS_DEBUG"))
     (do
-      (.setLevel (org.apache.log4j.Logger/getLogger "org.apache.zookeeper")
-                 org.apache.log4j.Level/DEBUG)
-      (.setLevel (org.apache.log4j.Logger/getLogger "org.apache.hadoop.hbase")
-                 org.apache.log4j.Level/DEBUG))
+      (.setLevel (org.apache.log4j.Logger/getLogger "org.apache.zookeeper") org.apache.log4j.Level/DEBUG)
+      (.setLevel (org.apache.log4j.Logger/getLogger "org.apache.hadoop.hbase") org.apache.log4j.Level/DEBUG))
     (do
-      (.setLevel (org.apache.log4j.Logger/getLogger "org.apache.zookeeper")
-                 org.apache.log4j.Level/ERROR)
-      (.setLevel (org.apache.log4j.Logger/getLogger "org.apache.hadoop.hbase")
-                 org.apache.log4j.Level/ERROR)))
+      (.setLevel (org.apache.log4j.Logger/getLogger "org.apache.zookeeper") org.apache.log4j.Level/ERROR)
+      (.setLevel (org.apache.log4j.Logger/getLogger "org.apache.hadoop.hbase") org.apache.log4j.Level/ERROR)))
 
   (try
     (dosync

@@ -1,4 +1,3 @@
-;; vim:ft=lisp:ts=3:sw=3:expandtab
 (ns hubris.command-test
   (:use [hubris.command] :reload-all)
   (:use [clojure.test]))
