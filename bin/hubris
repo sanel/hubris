@@ -23,6 +23,11 @@ Options:
    --version    show version
    --clojure    go directly in clojure mode
    --debug      display various details from hbase logger and $program
+
+Environment:
+   HUBRIS_DEBUG  run hubris in debug mode (same as --debug option)
+   HUBRIS_LIB    alternative location for additional jars
+   CLASSPATH     additional classes and jars explicitly exported
 EOF
 }
 
