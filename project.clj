@@ -1,4 +1,4 @@
-(defproject hubris "0.1.0"
+(defproject hubris "0.2.0"
   :description "Hubris - HBase uber shell"
   :license "EPL 1.0"
   :url "http://github.com/sanel/hubris"

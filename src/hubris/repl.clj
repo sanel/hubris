@@ -38,6 +38,11 @@
 (defn evaluate-with-redirection
   "Scan expression for possible redirection(s), and if found, bind output to it. If not, proceed as usual."
   [expr]
+  ;; Try to catch CTRL-D input; normaly, REPL would quit with CTRL-C, but CTRL-D combo would force nil input
+  ;; causing further functions to throw null exception. I'm hoping this 'hack' would not cause other troubles...
+  (when-not expr
+    (System/exit 0))
+
   (if (re-find #"\s+>\s+" expr)
     (do
       (let [tokens (.split expr "\\s+>\\s+")
