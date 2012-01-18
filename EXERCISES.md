@@ -8,4 +8,4 @@ Connect to your running HBase via **hubris**.
     Hbase UBer Interactive Shell; enter 'help<RETURN>' to see available commands or 'exit<RETURN>' to quit.
     hubris>
 
-Type **help**
+_TODO_
