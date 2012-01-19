@@ -146,7 +146,7 @@ Instead, I created simple command (named it _do-magic_) with the following conte
         ;; convert names/value to bytes and fill table with appropriate Put object
 		
         (loop [i 0
-               e 100000
+               e 1000000
                familly   (Bytes/toBytes "f1")
                qualifier (Bytes/toBytes "q")]  ;; some qualifier
 			   
