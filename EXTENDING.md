@@ -111,3 +111,57 @@ will get message like _Not connected to database_.
 [HBase API](http://hbase.apache.org/docs/current/api/overview-summary.html) (_tableExists_ is part of it).
 
 Part of these functions is **hbase-conf**, returning HBaseConfiguration object.
+
+## The Real World example
+
+Writing own commands easily makes hubris suitable for quick operations over HBase data and tables.
+
+Recently, I needed to fill sample database for some testing and setting ordinary project for using HBase API was
+wasting of time. It didn't matter should I write it in Java, Clojure or Jruby, I still had to create project,
+find appropriate bindings or create some Ant code (in Java case). And, should I mention you have to tackle with 
+_hbase-site.xml_ if you are going to use default HBaseConfiguration vaules?
+
+Instead, I created simple command (named it _do-magic_) with the following content:
+
+    ;; import needed HBase classes
+    (import [org.apache.hadoop.hbase.client HTable Put]
+            [org.apache.hadoop.hbase.util Bytes])
+
+    ;; use our wrapper and current connection objects and configuration
+    (require 'hbase.core)
+
+    (defcommand do-magic
+      "Add million rows to 'demo2' table"
+      []
+	  (hbase.core/with-connection
+	  
+	    ;; create table object using current connection and operate on 'demo2' table
+        (def table (HTable. (hbase.core/hbase-conf) "demo2"))
+
+        ;; this is the way how we loop in clojure; we start with 'i = 0' and ends when it
+		;; gets to 'e' which is million; during the iteration, we append new row with
+		;; the name 'row_X' with value X, where X is current iteration number
+		
+		;; rest of the code is pretty much ordinary HBase API usage; create family, qualifier,
+        ;; convert names/value to bytes and fill table with appropriate Put object
+		
+        (loop [i 0
+               e 100000
+               familly   (Bytes/toBytes "f1")
+               qualifier (Bytes/toBytes "q")]  ;; some qualifier
+			   
+               (let [row   (Bytes/toBytes (format "row_%d" i))
+                     value (Bytes/toBytes (str i))
+                     p     (Put. row)]
+					
+				 ;; simple status so I know how long to wait
+                 (printf "Adding %d\n" (inc i))
+				 
+                 (.add p familly qualifier value)
+                 (.put table p)
+				 
+				 ;; recurse to 'loop'
+                 (if (< i e)
+                   (recur (inc i) e familly qualifier) ) ) ) ) )
+
+Job done! It took me a couple of minutes to finish this on computer where only java was installed (using hubris with all dependencies).

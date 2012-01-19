@@ -143,6 +143,7 @@
   (with-connection
     (.shutdown @*hbase-admin*)))
 
+;; TODO: make it lazy
 (defn get-all-columns
   "Return all columns from given table as sequence."
   [name]
