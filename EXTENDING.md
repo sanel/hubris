@@ -153,7 +153,6 @@ Instead, I created simple command (named it _do-magic_) with the following conte
 
   ;; rest of the code is pretty much ordinary HBase API usage; create family, qualifier,
   ;; convert names/value to bytes and fill table with appropriate Put object
-
   (loop [i 0
          e 1000000
          familly   (Bytes/toBytes "f1")
@@ -171,7 +170,7 @@ Instead, I created simple command (named it _do-magic_) with the following conte
 
            ;; recurse to 'loop'
            (if (< i e)
-             (recur (inc i) e familly qualifier) ) ) ) ) )
+             (recur (inc i) e familly qualifier) )))))
 ```
 
 Job done! It took me a couple of minutes to finish this on computer where only java was installed (using hubris with all dependencies).
