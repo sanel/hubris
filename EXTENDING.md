@@ -21,10 +21,12 @@ will use Java API and have readable documentation, explaining what command does.
 
 In editor write this:
 
-    (defcommand pwd
-      "Print current directory."
-      []
-      (.getCanonicalPath (new java.io.File ".")) )
+```clojure
+(defcommand pwd
+  "Print current directory."
+  []
+  (.getCanonicalPath (new java.io.File ".")) )
+```
 
 and save it as **<hubris-dir>/commands/pwd.clj**. After you start hubris, you should see something like:
 
@@ -55,25 +57,29 @@ Everything after that is ordinary Clojure code with direct access to Java API, i
 If you are going to use additional Java libraries (like HBase API), you can simply import them. Here is the same _pwd_ example, where 
 we are going to import File class, instead to use it with full package name.
 
-    (import 'java.io.File)
+```clojure
+(import 'java.io.File)
 
-    (defcommand pwd
-      "Print current directory."
-      []
-      (.getCanonicalPath (new File ".")) )
+(defcommand pwd
+  "Print current directory."
+  []
+  (.getCanonicalPath (new File ".")) )
+```
 
 ## Commands with optional arguments
 
 With **defcommand** you can also make a command to accept optional arguments, like:
 
-    (defcommand print-me
-      "Just print argument, or notify when there are no arguments."
-      ;; called with no arguments
-      ([]
-        (println "No arguments"))
-      ;; called with single argument
-      ([arg]
-        (printf "Argument is: %s\n" arg) ))
+```clojure
+(defcommand print-me
+  "Just print argument, or notify when there are no arguments."
+  ;; called with no arguments
+  ([]
+    (println "No arguments"))
+  ;; called with single argument
+  ([arg]
+    (printf "Argument is: %s\n" arg) ))
+```
 
 and save it in _<hubris-dir>/commands/print_me.clj_. When executed in hubris shell, you will get something like:
 
@@ -93,16 +99,18 @@ or user tried another solution.
 Here we will implement _table-exists_ command, that should print _true_ or _false_ in shell, or write some error message when
 connection was not made.
 
-    (defcommand table-exists
-      "Check if given table exists."
-      [table]
-      (hbase.core/with-connection
-        (let [admin (hbase.core/hbase-admin)
-              found (.tableExists admin table)]
+```clojure
+(defcommand table-exists
+  "Check if given table exists."
+  [table]
+  (hbase.core/with-connection
+    (let [admin (hbase.core/hbase-admin)
+          found (.tableExists admin table)]
 
-          (if found
-            (println "true")
-            (println "false") ))))
+      (if found
+        (println "true")
+        (println "false") ))))
+```
 
 **with-connection** macro will make sure we are successfully connected. If not, the code will not be executed and user
 will get message like _Not connected to database_.
@@ -123,45 +131,47 @@ _hbase-site.xml_ if you are going to use default HBaseConfiguration vaules?
 
 Instead, I created simple command (named it _do-magic_) with the following content:
 
-    ;; import needed HBase classes
-    (import [org.apache.hadoop.hbase.client HTable Put]
-            [org.apache.hadoop.hbase.util Bytes])
+```clojure
+;; import needed HBase classes
+(import [org.apache.hadoop.hbase.client HTable Put]
+        [org.apache.hadoop.hbase.util Bytes])
 
-    ;; use our wrapper and current connection objects and configuration
-    (require 'hbase.core)
+;; use our wrapper and current connection objects and configuration
+(require 'hbase.core)
 
-    (defcommand do-magic
-      "Add million rows to 'demo2' table"
-      []
-	  (hbase.core/with-connection
-	  
-	    ;; create table object using current connection and operate on 'demo2' table
-        (def table (HTable. (hbase.core/hbase-conf) "demo2"))
+(defcommand do-magic
+  "Add million rows to 'demo2' table"
+  []
+  (hbase.core/with-connection
 
-        ;; this is the way how we loop in clojure; we start with 'i = 0' and ends when it
-		;; gets to 'e' which is million; during the iteration, we append new row with
-		;; the name 'row_X' with value X, where X is current iteration number
-		
-		;; rest of the code is pretty much ordinary HBase API usage; create family, qualifier,
-        ;; convert names/value to bytes and fill table with appropriate Put object
-		
-        (loop [i 0
-               e 1000000
-               familly   (Bytes/toBytes "f1")
-               qualifier (Bytes/toBytes "q")]  ;; some qualifier
-			   
-               (let [row   (Bytes/toBytes (format "row_%d" i))
-                     value (Bytes/toBytes (str i))
-                     p     (Put. row)]
-					
-				 ;; simple status so I know how long to wait
-                 (printf "Adding %d\n" (inc i))
-				 
-                 (.add p familly qualifier value)
-                 (.put table p)
-				 
-				 ;; recurse to 'loop'
-                 (if (< i e)
-                   (recur (inc i) e familly qualifier) ) ) ) ) )
+  ;; create table object using current connection and operate on 'demo2' table
+  (def table (HTable. (hbase.core/hbase-conf) "demo2"))
+
+  ;; this is the way how we loop in clojure; we start with 'i = 0' and ends when it
+  ;; gets to 'e' which is million; during the iteration, we append new row with
+  ;; the name 'row_X' with value X, where X is current iteration number
+
+  ;; rest of the code is pretty much ordinary HBase API usage; create family, qualifier,
+  ;; convert names/value to bytes and fill table with appropriate Put object
+
+  (loop [i 0
+         e 1000000
+         familly   (Bytes/toBytes "f1")
+         qualifier (Bytes/toBytes "q")]  ;; some qualifier
+
+         (let [row   (Bytes/toBytes (format "row_%d" i))
+               value (Bytes/toBytes (str i))
+               p     (Put. row)]
+
+           ;; simple status so I know how long to wait
+           (printf "Adding %d\n" (inc i))
+
+           (.add p familly qualifier value)
+           (.put table p)
+
+           ;; recurse to 'loop'
+           (if (< i e)
+             (recur (inc i) e familly qualifier) ) ) ) ) )
+```
 
 Job done! It took me a couple of minutes to finish this on computer where only java was installed (using hubris with all dependencies).
