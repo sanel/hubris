@@ -31,8 +31,7 @@ for only that command."
     ([cmd]
       (if (command-exists? cmd)
         (println (command-doc (symbol cmd)))
-        (println "No such command") ))
-  )
+        (println "No such command") )))
 
   (defcommand exit
     "Exit from shell."
@@ -58,8 +57,7 @@ Examples:
   hubris> connect \"foo\" \"baz\"  ;; connect to 'foo' host with 'baz' as zookeeper address"
     ([]     (connect "localhost"))
     ([host] (connect host host))
-    ([host zk] (hbase.core/connect-to host zk))
-  )
+    ([host zk] (hbase.core/connect-to host zk)))
 
   (defcommand host
     "Return name of host we are connected to."
@@ -76,11 +74,11 @@ a dictionary of table configuration. Dictionaries are described below in the GEN
 
 Examples:
 
-  hbase> create \"t1\" {:NAME \"f1\" :VERSIONS 5}
-  hbase> create \"t1\" [{:NAME \"f1\"} {:NAME \"f2\"} {:NAME \"f3\"}]
-  hbase> ;; The above in shorthand would be the following:
-  hbase> create \"t1\" \"f1\" \"f2\" \"f3\"
-  hbase> create \"t1\" {:NAME \"f1\" :VERSIONS 1 :TTL 2592000 :BLOCKCACHE true}"
+  hubris> create \"t1\" {:NAME \"f1\" :VERSIONS 5}
+  hubris> create \"t1\" [{:NAME \"f1\"} {:NAME \"f2\"} {:NAME \"f3\"}]
+  hubris> ;; The above in shorthand would be the following:
+  hubris> create \"t1\" \"f1\" \"f2\" \"f3\"
+  hubris> create \"t1\" {:NAME \"f1\" :VERSIONS 1 :TTL 2592000 :BLOCKCACHE true}"
    [table opts]
    (println "TODO"))
 
