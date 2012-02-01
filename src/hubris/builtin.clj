@@ -156,7 +156,6 @@ Examples:
                 (if (= 0 (mod cc interval))
                   (printf "Current count: %s, row: %s\n" cc
                                                          (new String (.getRow n)) ))
-                ;; else
                 (recur iter cc))
               ;; else
               (printf "%s row(s)\n" rcount)
